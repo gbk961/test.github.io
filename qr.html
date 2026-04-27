@@ -1,67 +1,166 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二维码生成 - USTC Mirror</title>
-    <link rel="stylesheet" href="https://mirrors.ustc.edu.cn/layui/dist/css/layui.css" />
-    <style>
-        body { background-color: #f5f7f9; padding: 20px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
-        .container-box { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin: 0 auto; max-width: 1000px; }
-        #qrcode { 
-            background: #fff; 
-            padding: 15px; 
-            border: 1px solid #eee; 
-            display: inline-block;
-            width: 256px;
-            height: 256px;
-            box-sizing: content-box;
-        }
-        #qrcode canvas { width: 100% !important; height: auto !important; }
-        .layui-textarea { border-radius: 6px; resize: none; font-size: 14px; line-height: 1.6; }
-        .tip-text { color: #999; font-size: 12px; margin-top: 10px; }
-    </style>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="/favicon.ico" type="favicon">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/css/layui.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/layui.js" type="55ddb56e27c8cef97314528b-text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>Qr</title>
 </head>
 <body>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+    <legend>二维码生成</legend>
+</fieldset>
+    <div class="layui-row ">
+        <div carousel-item="">
+            <ul class="layui-row layui-this site-doc-icon site-doc-anim">
+                <li class="layui-col-xs6 ">
+                    <form class="layui-form" action="" >
+                        <div class="layui-form-item layui-form-text" >
+    <!--                        <label class="layui-form-label">文本域</label>-->
+                            <div class="layui-input-block">
+                                <textarea placeholder="请输入内容" class="layui-textarea" name="txt" style="width: 100%;height: 256px"></textarea>
+                                <input type="hidden" name="identical" value=''>
+                                <div class="layui-upload-drag" id="test10" style="margin: 20px 20px 0 0">
+                                    <i class="layui-icon"></i>
+                                    <p>点击上传，或将文件拖拽到此处</p>
+                                    <div class="layui-hide" id="uploadDemoView">
+                                        <hr>
+                                        <img src="" alt="上传成功后渲染" style="max-width: 196px">
+                                    </div>
+                                    <div class="layui-progress layui-progress-big"  lay-filter="jdt" lay-showPercent="true">
+                                        <div class="layui-progress-bar layui-bg-blue" lay-percent="0%"></div>
+                                    </div>
+                                </div>
+                                <a href="/writer_excel"><button type="button" class="layui-btn layui-btn-normal">下载</button></a>        
+                                
+                                <button id="fz" style="display:none" class="layui-btn" lay-submit="fz" lay-filter="fz">复制</button>
+                        <button style="display:none" id="btn" class="layui-btn" lay-submit="qr" lay-filter="qr">立即提交</button>
 
-<div class="container-box">
-    <fieldset class="layui-elem-field layui-field-title">
-        <legend>二维码生成器</legend>
-    </fieldset>
 
-    <div class="layui-row layui-col-space30">
-        <div class="layui-col-md7">
-            <form class="layui-form">
-                <div class="layui-form-item">
-                    <textarea id="txtInput" placeholder="输入网址或文字内容..." class="layui-textarea" style="height: 260px"></textarea>
-                </div>
-            </form>
-            <p class="tip-text">● 本地实时生成 ● 保护隐私不上传 ● 适配 HTTPS 安全环境</p>
-        </div>
+                            </div>
+                        </div>
+                    </form>
+                </li>
+                <li class="layui-col-xs6">
+                    <div id="qrcode" style="width: 20%;height: 20%"></div>
+                </li>
 
-        <div class="layui-col-md5" style="text-align: center;">
-            <div id="qrcode"></div>
-            <div style="margin-top: 15px;">
-                <span class="layui-badge layui-bg-blue">实时预览</span>
-            </div>
+            </ul>
         </div>
     </div>
-</div>
 
-<script src="https://mirrors.ustc.edu.cn/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<script src="https://mirrors.ustc.edu.cn/layui/dist/layui.js"></script>
-<script src="https://mirrors.ustc.edu.cn/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+<script src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="55ddb56e27c8cef97314528b-|49" defer></script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"ab4eeaf4924b455d882e29d1fe6579ed","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" type="55ddb56e27c8cef97314528b-text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js" integrity="sha512-NFUcDlm4V+a2sjPX7gREIXgCSFja9cHtKPOL1zj6QhnE0vcY695MODehqkaGYTLyL2wxe/wtr4Z49SvqXq12UQ==" crossorigin="anonymous" referrerpolicy="no-referrer" type="55ddb56e27c8cef97314528b-text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer" type="55ddb56e27c8cef97314528b-text/javascript"></script>
+<script type="55ddb56e27c8cef97314528b-text/javascript">
+    new ClipboardJS('canvas', {
+    text: function(trigger) {
+        console.log(trigger);
+        return 'XbbTBGcwikvaaVnx';
+    }
+});
+</script>
+<script type="55ddb56e27c8cef97314528b-text/javascript">
+    layui.use(['layer','form','upload','element',],function(){
+        var form = layui.form;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        var element = layui.element;
+        form.on('submit(fz)', function(data){
+            // const t = new URLSearchParams(window.location.search).get('txt');
+            //     // 初始化 ClipboardJS 实例，动态设置要复制的内容
+            // const clipboard = new ClipboardJS('#fz', {
+            //     text: () => t
+            // });
+        
+            // // 复制成功后，显示提示并销毁实例
+            // clipboard.on('success', function(e) {
+            //     console.log('已复制:', e.text);
+            //     layer.msg('已复制:'+t);
+            //     clipboard.destroy(); // 销毁实例，避免重复初始化
+            // });
+        
+            // clipboard.on('error', function(e) {
+            //     console.error('复制失败:', e);
+            // });
 
-<script>
-layui.use(['layer'], function(){
-    var $ = layui.jquery;
-    var lastVal = "";
+            return false;
+        });
+        form.on('submit(qr)', function(data){
+            //console.log(data.elem.id); //得到checkbox原始DOM对象
+            //console.log(data.elem.checked); //开关是否开启，true或者false
+            // console.log(data.value); //开关value值，也可以通过data.elem.value得到
+            // console.log(data.field); //得到美化后的DOM对象
+            if (data.field.txt != $('input[name="identical"]').val()){
+                // layer.msg(data.field.txt,{icon:1,time:1100});
+                $('input[name="identical"]').val(data.field.txt);
+                $("#qrcode").empty();
+                jQuery(function(){
+                    str = toUtf8(data.field.txt);
+                    jQuery('#qrcode').qrcode(str);
+                });
+            }
+            return false;
+            var name = $.trim($('input[name="provid"]').val());
+            var phone = $.trim($('input[name="phone"]').val());
+            var id_card = $.trim($('input[name="id_card"]').val());
+        });
+        //拖拽上传
+        upload.render({
+            elem: '#test10'
+            ,url: '/qr' //改成您自己的上传接口
+            , accept: 'file' //普通文件
+            , progress: function (n, elem) {
+                console.log(n);
+                var percent = n + '%'; //获取进度百分比
+                element.progress('jdt', percent); //可配合 layui 进度条元素使用
+            }
+            ,before: function(input){
+                var data = {};
+                data.type = $('input:radio:checked').val();
+                data.description = $('#description').val();
+                this.data=data;
+            }
+            ,done: function(res){
+                layer.msg(res.msg);
+                var url = window.location.host;
+                if(res.data.src.indexOf("http") !== -1){
+                    $('textarea[name="txt"]').val(res.data.src);
+                }else {
+                    $('textarea[name="txt"]').val('http://image.100600.xyz'+res.data.src);
+                }
 
-    // 解决中文二维码乱码
+                //layui.$('#uploadDemoView').removeClass('layui-hide').find('img').attr('src', res.url);
+                console.log(res)
+            }
+        });
+
+
+    });
+    window.setInterval("ssave()",1000);//每隔1秒，调用一次getDateDemo()
+    function ssave(){
+        // var myDate = new Date;
+        // console.log(navigator);
+        // console.log(myDate);
+        $('#btn').click();
+    }
+    jQuery(function(){
+        const currentUrl = window.location.href;
+        jQuery('#qrcode').qrcode(currentUrl);
+    });
     function toUtf8(str) {
-        var out = "";
-        for(var i = 0; i < str.length; i++) {
-            var c = str.charCodeAt(i);
+        var out, i, len, c;
+        out = "";
+        len = str.length;
+        for (i = 0; i < len; i++) {
+            c = str.charCodeAt(i);
             if ((c >= 0x0001) && (c <= 0x007F)) {
                 out += str.charAt(i);
             } else if (c > 0x07FF) {
@@ -76,29 +175,6 @@ layui.use(['layer'], function(){
         return out;
     }
 
-    function updateQR() {
-        var val = $('#txtInput').val();
-        if (val === lastVal) return;
-        lastVal = val;
-
-        $("#qrcode").empty();
-        if (val.trim() !== "") {
-            $('#qrcode').qrcode({
-                render: "canvas",
-                text: toUtf8(val),
-                width: 256,
-                height: 256
-            });
-        }
-    }
-
-    // 监听输入事件
-    $('#txtInput').on('input propertychange', updateQR);
-
-    // 初始显示当前链接
-    $('#txtInput').val(window.location.href);
-    updateQR();
-});
 </script>
-</body>
+
 </html>
