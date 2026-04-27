@@ -3,52 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二维码生成</title>
-    <link rel="stylesheet" type="text/css" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/layui/2.7.6/css/layui.css" />
+    <title>二维码生成 - USTC Mirror</title>
+    <link rel="stylesheet" href="https://mirrors.ustc.edu.cn/layui/dist/css/layui.css" />
     <style>
-        #qrcode canvas, #qrcode img {
-            max-width: 100%;
-            height: auto !important;
-            border: 1px solid #f0f0f0;
-            padding: 5px;
+        body { background-color: #f5f7f9; padding: 20px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+        .container-box { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin: 0 auto; max-width: 1000px; }
+        #qrcode { 
+            background: #fff; 
+            padding: 15px; 
+            border: 1px solid #eee; 
+            display: inline-block;
+            width: 256px;
+            height: 256px;
+            box-sizing: content-box;
         }
-        .layui-container { max-width: 900px; }
+        #qrcode canvas { width: 100% !important; height: auto !important; }
+        .layui-textarea { border-radius: 6px; resize: none; font-size: 14px; line-height: 1.6; }
+        .tip-text { color: #999; font-size: 12px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="layui-container" style="margin-top: 30px;">
+<div class="container-box">
     <fieldset class="layui-elem-field layui-field-title">
         <legend>二维码生成器</legend>
     </fieldset>
-    
+
     <div class="layui-row layui-col-space30">
-        <div class="layui-col-xs12 layui-col-md6">
+        <div class="layui-col-md7">
             <form class="layui-form">
-                <div class="layui-form-item layui-form-text">
-                    <textarea placeholder="在此输入内容，右侧自动更新..." class="layui-textarea" id="txtInput" style="height: 256px"></textarea>
+                <div class="layui-form-item">
+                    <textarea id="txtInput" placeholder="输入网址或文字内容..." class="layui-textarea" style="height: 260px"></textarea>
                 </div>
             </form>
+            <p class="tip-text">● 本地实时生成 ● 保护隐私不上传 ● 适配 HTTPS 安全环境</p>
         </div>
-        <div class="layui-col-xs12 layui-col-md6" style="text-align: center;">
-            <div id="qrcode" style="display: inline-block; width: 256px; height: 256px; background: #fafafa; line-height: 256px; color: #ccc;">
-                等待输入...
+
+        <div class="layui-col-md5" style="text-align: center;">
+            <div id="qrcode"></div>
+            <div style="margin-top: 15px;">
+                <span class="layui-badge layui-bg-blue">实时预览</span>
             </div>
-            <p style="margin-top: 15px; color: #666; font-weight: bold;">实时预览</p>
         </div>
     </div>
 </div>
 
-<script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/layui/2.7.6/layui.js"></script>
-<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+<script src="https://mirrors.ustc.edu.cn/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://mirrors.ustc.edu.cn/layui/dist/layui.js"></script>
+<script src="https://mirrors.ustc.edu.cn/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
 
 <script>
 layui.use(['layer'], function(){
     var $ = layui.jquery;
-    var lastContent = "";
+    var lastVal = "";
 
-    // 处理中文编码
+    // 解决中文二维码乱码
     function toUtf8(str) {
         var out = "";
         for(var i = 0; i < str.length; i++) {
@@ -67,33 +76,28 @@ layui.use(['layer'], function(){
         return out;
     }
 
-    function renderQR() {
+    function updateQR() {
         var val = $('#txtInput').val();
-        if (val === lastContent) return;
-        lastContent = val;
+        if (val === lastVal) return;
+        lastVal = val;
 
-        $("#qrcode").empty().css("line-height", "normal");
-        
+        $("#qrcode").empty();
         if (val.trim() !== "") {
             $('#qrcode').qrcode({
                 render: "canvas",
                 text: toUtf8(val),
                 width: 256,
-                height: 256,
-                background: "#ffffff",
-                foreground: "#000000"
+                height: 256
             });
-        } else {
-            $("#qrcode").text("等待输入...").css("line-height", "256px");
         }
     }
 
-    // 绑定输入事件
-    $('#txtInput').on('input propertychange', renderQR);
+    // 监听输入事件
+    $('#txtInput').on('input propertychange', updateQR);
 
-    // 初始加载：显示当前页面地址
+    // 初始显示当前链接
     $('#txtInput').val(window.location.href);
-    renderQR();
+    updateQR();
 });
 </script>
 </body>
