@@ -3,41 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二维码生成器</title>
-    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css" />
+    <title>二维码生成</title>
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui-2.7.6/css/layui.css" />
     <style>
-        #qrcode canvas { width: 100%; height: auto; border: 1px solid #eee; padding: 10px; }
+        /* 强制二维码图片撑满li容器，保持之前的样式 */
+        #qrcode canvas, #qrcode img {
+            width: 100% !important;
+            height: auto !important;
+        }
     </style>
 </head>
 <body>
 
 <div class="layui-container" style="margin-top: 30px;">
     <fieldset class="layui-elem-field layui-field-title">
-        <legend>二维码生成 (GitHub Pages 版)</legend>
+        <legend>二维码生成器</legend>
     </fieldset>
     
     <div class="layui-row layui-col-space30">
-        <div class="layui-col-md6">
+        <div class="layui-col-xs12 layui-col-md6">
             <form class="layui-form">
                 <div class="layui-form-item layui-form-text">
-                    <textarea id="txtInput" placeholder="请输入内容，右侧将自动实时生成二维码" class="layui-textarea" style="height: 200px"></textarea>
+                    <div class="layui-input-block" style="margin-left: 0;">
+                        <textarea placeholder="请输入内容..." class="layui-textarea" name="txt" id="txt" style="height: 256px"></textarea>
+                    </div>
                 </div>
-                <div class="layui-word-aux" style="margin-bottom: 10px;">注：静态环境下文件上传功能已禁用。</div>
             </form>
         </div>
-        <div class="layui-col-md6" style="text-align: center;">
-            <div id="qrcode"></div>
+        <div class="layui-col-xs12 layui-col-md6" style="text-align: center;">
+            <div id="qrcode" style="display: inline-block; width: 256px; height: 256px;"></div>
             <p style="margin-top: 10px; color: #999;">生成的二维码</p>
         </div>
     </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<script src="https://www.layuicdn.com/layui/layui.js"></script>
+<script src="https://www.layuicdn.com/layui-2.7.6/layui.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
 
 <script>
 layui.use(['layer', 'form'], function(){
+    var form = layui.form;
     var $ = layui.jquery;
     var lastContent = "";
 
@@ -63,14 +69,16 @@ layui.use(['layer', 'form'], function(){
     }
 
     function generateQR() {
-        var content = $('#txtInput').val();
-        if (content === lastContent) return;
+        var content = $('#txt').val();
+        if (content === lastContent) return; // 避免重复生成
         lastContent = content;
         
-        $("#qrcode").empty();
+        $("#qrcode").empty(); // 清空旧二维码
+        
         if (content.trim() !== "") {
-            $('#qrcode').qrcode({
-                render: "canvas",
+            // 使用标准参数生成
+            jQuery('#qrcode').qrcode({
+                render: "canvas", // 性能更好
                 text: toUtf8(content),
                 width: 256,
                 height: 256
@@ -78,14 +86,12 @@ layui.use(['layer', 'form'], function(){
         }
     }
 
-    // 监听输入，实时生成
-    $('#txtInput').on('input propertychange', function() {
+    // 监听文本框输入，实时生成（兼容 propertychange）
+    $('#txt').on('input propertychange', function() {
         generateQR();
     });
 
-    // 初始化显示当前 URL
-    $('#txtInput').val(window.location.href);
-    generateQR();
+    // 移除之前的定时器 $('#btn').click() 逻辑，改用直接监听
 });
 </script>
 </body>
