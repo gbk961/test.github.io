@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>二维码生成</title>
-    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui-2.7.6/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/layui/2.7.6/css/layui.css" />
     <style>
-        /* 强制二维码图片撑满li容器，保持之前的样式 */
         #qrcode canvas, #qrcode img {
-            width: 100% !important;
+            max-width: 100%;
             height: auto !important;
+            border: 1px solid #f0f0f0;
+            padding: 5px;
         }
+        .layui-container { max-width: 900px; }
     </style>
 </head>
 <body>
@@ -24,36 +26,33 @@
         <div class="layui-col-xs12 layui-col-md6">
             <form class="layui-form">
                 <div class="layui-form-item layui-form-text">
-                    <div class="layui-input-block" style="margin-left: 0;">
-                        <textarea placeholder="请输入内容..." class="layui-textarea" name="txt" id="txt" style="height: 256px"></textarea>
-                    </div>
+                    <textarea placeholder="在此输入内容，右侧自动更新..." class="layui-textarea" id="txtInput" style="height: 256px"></textarea>
                 </div>
             </form>
         </div>
         <div class="layui-col-xs12 layui-col-md6" style="text-align: center;">
-            <div id="qrcode" style="display: inline-block; width: 256px; height: 256px;"></div>
-            <p style="margin-top: 10px; color: #999;">生成的二维码</p>
+            <div id="qrcode" style="display: inline-block; width: 256px; height: 256px; background: #fafafa; line-height: 256px; color: #ccc;">
+                等待输入...
+            </div>
+            <p style="margin-top: 15px; color: #666; font-weight: bold;">实时预览</p>
         </div>
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<script src="https://www.layuicdn.com/layui-2.7.6/layui.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+<script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/layui/2.7.6/layui.js"></script>
+<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
 
 <script>
-layui.use(['layer', 'form'], function(){
-    var form = layui.form;
+layui.use(['layer'], function(){
     var $ = layui.jquery;
     var lastContent = "";
 
-    // 字符转码函数
+    // 处理中文编码
     function toUtf8(str) {
-        var out, i, len, c;
-        out = "";
-        len = str.length;
-        for(i = 0; i < len; i++) {
-            c = str.charCodeAt(i);
+        var out = "";
+        for(var i = 0; i < str.length; i++) {
+            var c = str.charCodeAt(i);
             if ((c >= 0x0001) && (c <= 0x007F)) {
                 out += str.charAt(i);
             } else if (c > 0x07FF) {
@@ -68,30 +67,33 @@ layui.use(['layer', 'form'], function(){
         return out;
     }
 
-    function generateQR() {
-        var content = $('#txt').val();
-        if (content === lastContent) return; // 避免重复生成
-        lastContent = content;
+    function renderQR() {
+        var val = $('#txtInput').val();
+        if (val === lastContent) return;
+        lastContent = val;
+
+        $("#qrcode").empty().css("line-height", "normal");
         
-        $("#qrcode").empty(); // 清空旧二维码
-        
-        if (content.trim() !== "") {
-            // 使用标准参数生成
-            jQuery('#qrcode').qrcode({
-                render: "canvas", // 性能更好
-                text: toUtf8(content),
+        if (val.trim() !== "") {
+            $('#qrcode').qrcode({
+                render: "canvas",
+                text: toUtf8(val),
                 width: 256,
-                height: 256
+                height: 256,
+                background: "#ffffff",
+                foreground: "#000000"
             });
+        } else {
+            $("#qrcode").text("等待输入...").css("line-height", "256px");
         }
     }
 
-    // 监听文本框输入，实时生成（兼容 propertychange）
-    $('#txt').on('input propertychange', function() {
-        generateQR();
-    });
+    // 绑定输入事件
+    $('#txtInput').on('input propertychange', renderQR);
 
-    // 移除之前的定时器 $('#btn').click() 逻辑，改用直接监听
+    // 初始加载：显示当前页面地址
+    $('#txtInput').val(window.location.href);
+    renderQR();
 });
 </script>
 </body>
